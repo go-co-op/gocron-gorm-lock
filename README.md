@@ -49,7 +49,7 @@ func main() {
 
 ## Prerequisites
 
-- The table cron_job_locks needs to exists in the database. This can be achieved, as an example, using gorm automigrate functionality `db.Automigrate(&CronJobLock{})`
+- The table cron_job_locks needs to exist in the database. This can be achieved, as an example, using gorm automigrate functionality `db.Automigrate(&CronJobLock{})`
 - In order to uniquely identify the job, the locker uses the unique combination of the job name + timestamp (by default with precision to miliseconds).
 
 ## FAQ

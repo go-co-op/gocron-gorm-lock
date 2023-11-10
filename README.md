@@ -54,5 +54,15 @@ func main() {
 
 ## FAQ
 
-- The locker uses the unique combination of the job name + timestamp with miliseconds precision, how can I change that:
-- It's possible to set how to create the job identifier, here is an example to set an hour precision: `locker, err := gormlock.NewGormLocker(db, "local", WithJobIdentifier(func(ctx context.Context, key string) string { return time.Now().Truncate(60 * time.Minute).Format("2006-01-02 15:04:05.000")}))`
+- Q: The locker uses the unique combination of the job name + timestamp with miliseconds precision, how can I change that?
+  - A: It's possible to set how to create the job identifier, here is an example to set an hour precision:
+    ```go
+	locker, err := gormlock.NewGormLocker(db, "local",
+		gormlock.WithJobIdentifier(
+			func(ctx context.Context, key string) string {
+				return time.Now().Truncate(60 * time.Minute).
+					Format("2006-01-02 15:04:05.000")
+			},
+		),
+	)
+    ```

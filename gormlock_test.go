@@ -209,16 +209,17 @@ func TestJobReturningExceptionWhenUnique(t *testing.T) {
 	err = db.AutoMigrate(&CronJobLock{})
 	require.NoError(t, err)
 
+	precision := 60 * time.Minute
 	// creating an entry to force the unique identifier error
 	cjb := &CronJobLock{
 		JobName:       "job",
-		JobIdentifier: time.Now().Truncate(60 * time.Minute).Format("2006-01-02 15:04:05.000"),
+		JobIdentifier: time.Now().Truncate(precision).Format("2006-01-02 15:04:05.000"),
 		Worker:        "local",
 		Status:        "RUNNING",
 	}
 	require.NoError(t, db.Create(cjb).Error)
 
-	l, _ := NewGormLocker(db, "local", WithDefaultJobIdentifier(60*time.Minute))
+	l, _ := NewGormLocker(db, "local", WithDefaultJobIdentifier(precision))
 	_, lerr := l.Lock(ctx, "job")
 	if assert.Error(t, lerr) {
 		assert.ErrorContains(t, lerr, "violates unique constraint")

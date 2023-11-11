@@ -15,6 +15,26 @@ import (
 	"gorm.io/gorm"
 )
 
+func TestNewGormLocker_Validation(t *testing.T) {
+	tests := map[string]struct {
+		db     *gorm.DB
+		worker string
+		err    string
+	}{
+		"db is nil":       {db: nil, worker: "local", err: "gorm db definition can't be null"},
+		"worker is empty": {db: &gorm.DB{}, worker: "", err: "worker name can't be null"},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			_, err := NewGormLocker(tc.db, tc.worker)
+			if assert.Error(t, err) {
+				assert.ErrorContains(t, err, tc.err)
+			}
+		})
+	}
+}
+
 func TestEnableDistributedLocking(t *testing.T) {
 	ctx := context.Background()
 	postgresContainer, err := testcontainerspostgres.RunContainer(ctx,
@@ -189,7 +209,7 @@ func TestJobReturningExceptionWhenUnique(t *testing.T) {
 	err = db.AutoMigrate(&CronJobLock{})
 	require.NoError(t, err)
 
-	// creating a entry to force the unique identifier error
+	// creating an entry to force the unique identifier error
 	cjb := &CronJobLock{
 		JobName:       "job",
 		JobIdentifier: time.Now().Truncate(60 * time.Minute).Format("2006-01-02 15:04:05.000"),
@@ -198,9 +218,7 @@ func TestJobReturningExceptionWhenUnique(t *testing.T) {
 	}
 	require.NoError(t, db.Create(cjb).Error)
 
-	l, _ := NewGormLocker(db, "local", WithJobIdentifier(func(ctx context.Context, key string) string {
-		return time.Now().Truncate(60 * time.Minute).Format("2006-01-02 15:04:05.000")
-	}))
+	l, _ := NewGormLocker(db, "local", WithDefaultJobIdentifier(60*time.Minute))
 	_, lerr := l.Lock(ctx, "job")
 	if assert.Error(t, lerr) {
 		assert.ErrorContains(t, lerr, "violates unique constraint")

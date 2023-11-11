@@ -2,6 +2,7 @@ package gormlock
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/go-co-op/gocron"
@@ -9,8 +10,19 @@ import (
 )
 
 var defaultPrecision = time.Millisecond
+var defaultJobIdentifier = func(precision time.Duration) func(ctx context.Context, key string) string {
+	return func(ctx context.Context, key string) string {
+		return time.Now().Truncate(precision).Format("2006-01-02 15:04:05.000")
+	}
+}
 
 func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (gocron.Locker, error) {
+	if db == nil {
+		return nil, fmt.Errorf("gorm db definition can't be null")
+	}
+	if worker == "" {
+		return nil, fmt.Errorf("worker name can't be null")
+	}
 	gl := &gormLocker{db: db, worker: worker}
 	for _, option := range options {
 		option(gl)
@@ -45,7 +57,7 @@ func (g *gormLocker) Lock(ctx context.Context, key string) (gocron.Lock, error) 
 
 func (g *gormLocker) getJobIdentifier(ctx context.Context, key string) string {
 	if g.jobIdentifier == nil {
-		return time.Now().Truncate(defaultPrecision).Format("2006-01-02 15:04:05.000")
+		g.jobIdentifier = defaultJobIdentifier(defaultPrecision)
 	}
 	return g.jobIdentifier(ctx, key)
 }

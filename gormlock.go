@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var defaultPrecision = time.Millisecond
+var defaultPrecision = time.Second
 
 func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (gocron.Locker, error) {
 	gl := &gormLocker{db: db, worker: worker}

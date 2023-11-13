@@ -128,9 +128,9 @@ func TestEnableDistributedLocking_DifferentJob(t *testing.T) {
 	l3, err := NewGormLocker(db, "s3")
 	require.NoError(t, err)
 	s3.WithDistributedLocker(l3)
-	_, err = s3.Every("500ms").Name("f").Do(f, 3)
+	_, err = s3.Every("1s").Name("f").Do(f, 3)
 	require.NoError(t, err)
-	_, err = s3.Every("500ms").Name("f2").Do(f2, 3)
+	_, err = s3.Every("1s").Name("f2").Do(f2, 3)
 	require.NoError(t, err)
 
 	s1.StartAsync()

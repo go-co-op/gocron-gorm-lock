@@ -59,7 +59,7 @@ func main() {
       ```go
       locker, err := gormlock.NewGormLocker(db, "local", gormlock.WithDefaultJobIdentifier(60 * time.Minute))
       ```
-- Q: But what about if we write our own:
+- Q: But what about if we want to write our own implementation:
     - A: It's possible to set how to create the job identifier:
       ```go
       locker, err := gormlock.NewGormLocker(db, "local",

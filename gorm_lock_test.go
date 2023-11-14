@@ -207,7 +207,7 @@ func TestJobReturningExceptionWhenUnique(t *testing.T) {
 		JobName:       "job",
 		JobIdentifier: time.Now().Truncate(precision).Format("2006-01-02 15:04:05.000"),
 		Worker:        "local",
-		Status:        "RUNNING",
+		Status:        StatusRunning,
 	}
 	require.NoError(t, db.Create(cjb).Error)
 

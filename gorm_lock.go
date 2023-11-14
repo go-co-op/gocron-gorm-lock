@@ -10,12 +10,15 @@ import (
 )
 
 var (
-	defaultPrecision     = time.Second
+	defaultPrecision = time.Second
 	defaultJobIdentifier = func(precision time.Duration) func(ctx context.Context, key string) string {
 		return func(ctx context.Context, key string) string {
 			return time.Now().Truncate(precision).Format("2006-01-02 15:04:05.000")
 		}
 	}
+
+	StatusRunning  = "RUNNING"
+	StatusFinished = "FINISHED"
 )
 
 func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (gocron.Locker, error) {
@@ -48,7 +51,7 @@ func (g *gormLocker) Lock(ctx context.Context, key string) (gocron.Lock, error) 
 		JobName:       key,
 		JobIdentifier: ji,
 		Worker:        g.worker,
-		Status:        "RUNNING",
+		Status:        StatusRunning,
 	}
 	tx := g.db.Create(cjb)
 	if tx.Error != nil {
@@ -72,5 +75,5 @@ type gormLock struct {
 }
 
 func (g *gormLock) Unlock(_ context.Context) error {
-	return g.db.Model(&CronJobLock{ID: g.id}).Updates(&CronJobLock{Status: "FINISHED"}).Error
+	return g.db.Model(&CronJobLock{ID: g.id}).Updates(&CronJobLock{Status: StatusFinished}).Error
 }

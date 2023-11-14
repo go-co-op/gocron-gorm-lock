@@ -50,23 +50,23 @@ func main() {
 ## Prerequisites
 
 - The table cron_job_locks needs to exist in the database. This can be achieved, as an example, using gorm automigrate functionality `db.Automigrate(&CronJobLock{})`
-- In order to uniquely identify the job, the locker uses the unique combination of the job name + timestamp (by default with precision to miliseconds).
+- In order to uniquely identify the job, the locker uses the unique combination of the job name + timestamp (by default with precision to seconds).
 
 ## FAQ
 
-- Q: The locker uses the unique combination of the job name + timestamp with miliseconds precision, how can I change that?
-  - A: It's possible to change the timestamp precision used to uniquely identify the job, here is an example to set an hour precision:
-    ```go
-	locker, err := gormlock.NewGormLocker(db, "local", gormlock.WithDefaultJobIdentifier(60 * time.Minute))
-    ```
+- Q: The locker uses the unique combination of the job name + timestamp with seconds precision, how can I change that?
+    - A: It's possible to change the timestamp precision used to uniquely identify the job, here is an example to set an hour precision:
+      ```go
+      locker, err := gormlock.NewGormLocker(db, "local", gormlock.WithDefaultJobIdentifier(60 * time.Minute))
+      ```
 - Q: But what about if we write our own:
-  - A: It's possible to set how to create the job identifier:
-    ```go
-	locker, err := gormlock.NewGormLocker(db, "local",
-		gormlock.WithJobIdentifier(
-			func(ctx context.Context, key string) string {
-				return ...
-			},
-		),
-	)
-    ```
+    - A: It's possible to set how to create the job identifier:
+      ```go
+      locker, err := gormlock.NewGormLocker(db, "local",
+          gormlock.WithJobIdentifier(
+              func(ctx context.Context, key string) string {
+                  return ...
+              },
+          ),
+      )
+      ```

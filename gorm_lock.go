@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	defaultPrecision = time.Second
+	defaultPrecision     = time.Second
 	defaultJobIdentifier = func(precision time.Duration) func(ctx context.Context, key string) string {
 		return func(ctx context.Context, key string) string {
 			return time.Now().Truncate(precision).Format("2006-01-02 15:04:05.000")
@@ -29,6 +29,7 @@ func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (gocron.Lo
 		return nil, fmt.Errorf("worker name can't be null")
 	}
 	gl := &gormLocker{db: db, worker: worker}
+	gl.jobIdentifier = defaultJobIdentifier(defaultPrecision)
 	for _, option := range options {
 		option(gl)
 	}
@@ -44,7 +45,7 @@ type gormLocker struct {
 }
 
 func (g *gormLocker) Lock(ctx context.Context, key string) (gocron.Lock, error) {
-	ji := g.getJobIdentifier(ctx, key)
+	ji := g.jobIdentifier(ctx, key)
 
 	// I would like that people can "pass" their own implementation,
 	cjb := &CronJobLock{
@@ -58,13 +59,6 @@ func (g *gormLocker) Lock(ctx context.Context, key string) (gocron.Lock, error) 
 		return nil, tx.Error
 	}
 	return &gormLock{db: g.db, id: cjb.GetID()}, nil
-}
-
-func (g *gormLocker) getJobIdentifier(ctx context.Context, key string) string {
-	if g.jobIdentifier == nil {
-		g.jobIdentifier = defaultJobIdentifier(defaultPrecision)
-	}
-	return g.jobIdentifier(ctx, key)
 }
 
 var _ gocron.Lock = (*gormLock)(nil)

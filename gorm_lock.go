@@ -8,7 +8,12 @@ import (
 	"gorm.io/gorm"
 )
 
-var defaultPrecision = time.Second
+var (
+	defaultPrecision = time.Second
+
+	StatusRunning  = "RUNNING"
+	StatusFinished = "FINISHED"
+)
 
 func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (gocron.Locker, error) {
 	gl := &gormLocker{db: db, worker: worker}
@@ -34,7 +39,7 @@ func (g *gormLocker) Lock(ctx context.Context, key string) (gocron.Lock, error) 
 		JobName:       key,
 		JobIdentifier: ji,
 		Worker:        g.worker,
-		Status:        "RUNNING",
+		Status:        StatusRunning,
 	}
 	tx := g.db.Create(cjb)
 	if tx.Error != nil {
@@ -58,5 +63,5 @@ type gormLock struct {
 }
 
 func (g *gormLock) Unlock(_ context.Context) error {
-	return g.db.Model(&CronJobLock{ID: g.id}).Updates(&CronJobLock{Status: "FINISHED"}).Error
+	return g.db.Model(&CronJobLock{ID: g.id}).Updates(&CronJobLock{Status: StatusFinished}).Error
 }

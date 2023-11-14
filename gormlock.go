@@ -9,12 +9,14 @@ import (
 	"gorm.io/gorm"
 )
 
-var defaultPrecision = time.Second
-var defaultJobIdentifier = func(precision time.Duration) func(ctx context.Context, key string) string {
-	return func(ctx context.Context, key string) string {
-		return time.Now().Truncate(precision).Format("2006-01-02 15:04:05.000")
+var (
+	defaultPrecision     = time.Second
+	defaultJobIdentifier = func(precision time.Duration) func(ctx context.Context, key string) string {
+		return func(ctx context.Context, key string) string {
+			return time.Now().Truncate(precision).Format("2006-01-02 15:04:05.000")
+		}
 	}
-}
+)
 
 func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (gocron.Locker, error) {
 	if db == nil {

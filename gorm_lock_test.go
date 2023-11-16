@@ -217,3 +217,50 @@ func TestJobReturningExceptionWhenUnique(t *testing.T) {
 		assert.ErrorContains(t, lerr, "violates unique constraint")
 	}
 }
+
+func TestHandleTTL(t *testing.T) {
+	ctx := context.Background()
+	postgresContainer, err := testcontainerspostgres.RunContainer(ctx,
+		testcontainers.WithWaitStrategy(wait.ForLog("database system is ready to accept connections").
+			WithOccurrence(2).WithStartupTimeout(5*time.Second)))
+	require.NoError(t, err)
+	t.Cleanup(func() {
+		if err := postgresContainer.Terminate(ctx); err != nil {
+			t.Fatalf("failed to terminate container: %s", err)
+		}
+	})
+
+	connStr, err := postgresContainer.ConnectionString(ctx, "sslmode=disable", "application_name=test")
+	assert.NoError(t, err)
+
+	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{})
+	require.NoError(t, err)
+
+	err = db.AutoMigrate(&CronJobLock{})
+	require.NoError(t, err)
+
+	l1, err := NewGormLocker(db, "s1", WithTTL(1*time.Second))
+	require.NoError(t, err)
+
+	s1 := gocron.NewScheduler(time.UTC)
+	s1.WithDistributedLocker(l1)
+
+	_, err = s1.Every("1s").Do(func() {})
+	require.NoError(t, err)
+
+	s1.StartAsync()
+
+	time.Sleep(3500 * time.Millisecond)
+
+	s1.Stop()
+
+	var allCronJobs []*CronJobLock
+	db.Find(&allCronJobs)
+	assert.GreaterOrEqual(t, len(allCronJobs), 3)
+
+	// wait for data to expire
+	time.Sleep(1500 * time.Millisecond)
+	l1.cleanExpire()
+	db.Find(&allCronJobs)
+	assert.Equal(t, 0, len(allCronJobs))
+}

@@ -8,7 +8,7 @@ require (
 	github.com/testcontainers/testcontainers-go v0.22.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.22.0
 	gorm.io/driver/postgres v1.5.2
-	gorm.io/gorm v1.25.2
+	gorm.io/gorm v1.25.5
 )
 
 require (

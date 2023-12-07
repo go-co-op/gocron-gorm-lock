@@ -25,7 +25,7 @@ var (
 	defaultCleanInterval = 5 * time.Second
 )
 
-func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (*gormLocker, error) {
+func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (*GormLocker, error) {
 	if db == nil {
 		return nil, fmt.Errorf("gorm db definition can't be null")
 	}
@@ -33,7 +33,7 @@ func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (*gormLock
 		return nil, fmt.Errorf("worker name can't be null")
 	}
 
-	gl := &gormLocker{
+	gl := &GormLocker{
 		db:       db,
 		worker:   worker,
 		ttl:      defaultTTL,
@@ -60,9 +60,9 @@ func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (*gormLock
 	return gl, nil
 }
 
-var _ gocron.Locker = (*gormLocker)(nil)
+var _ gocron.Locker = (*GormLocker)(nil)
 
-type gormLocker struct {
+type GormLocker struct {
 	db            *gorm.DB
 	worker        string
 	ttl           time.Duration
@@ -72,15 +72,15 @@ type gormLocker struct {
 	closed atomic.Bool
 }
 
-func (g *gormLocker) cleanExpiredRecords() {
+func (g *GormLocker) cleanExpiredRecords() {
 	g.db.Where("updated_at < ? and status = ?", time.Now().Add(-g.ttl), StatusFinished).Delete(&CronJobLock{})
 }
 
-func (g *gormLocker) Close() {
+func (g *GormLocker) Close() {
 	g.closed.Store(true)
 }
 
-func (g *gormLocker) Lock(ctx context.Context, key string) (gocron.Lock, error) {
+func (g *GormLocker) Lock(ctx context.Context, key string) (gocron.Lock, error) {
 	ji := g.jobIdentifier(ctx, key)
 
 	// I would like that people can "pass" their own implementation,

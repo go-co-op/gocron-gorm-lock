@@ -20,7 +20,7 @@ func WithDefaultJobIdentifier(precision time.Duration) LockOption {
 }
 
 // WithTTL when the locker records in the database exceeds the ttl, it is cleaned up.
-// to avoid excessive data in mysql.
+// to avoid excessive data in the database.
 func WithTTL(ttl time.Duration) LockOption {
 	return func(l *gormLocker) {
 		l.ttl = ttl

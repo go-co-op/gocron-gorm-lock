@@ -260,7 +260,7 @@ func TestHandleTTL(t *testing.T) {
 
 	// wait for data to expire
 	time.Sleep(1500 * time.Millisecond)
-	l1.cleanExpire()
+	l1.cleanExpiredRecords()
 	db.Find(&allCronJobs)
 	assert.Equal(t, 0, len(allCronJobs))
 }

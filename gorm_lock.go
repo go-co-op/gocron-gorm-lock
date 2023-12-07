@@ -21,10 +21,11 @@ var (
 	StatusRunning  = "RUNNING"
 	StatusFinished = "FINISHED"
 
-	defaultTTL = 24 * time.Hour
+	defaultTTL           = 24 * time.Hour
+	defaultCleanInterval = 5 * time.Second
 )
 
-func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (*GormLocker, error) {
+func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (*gormLocker, error) {
 	if db == nil {
 		return nil, fmt.Errorf("gorm db definition can't be null")
 	}
@@ -32,10 +33,11 @@ func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (*GormLock
 		return nil, fmt.Errorf("worker name can't be null")
 	}
 
-	gl := &GormLocker{
-		db:     db,
-		worker: worker,
-		ttl:    defaultTTL,
+	gl := &gormLocker{
+		db:       db,
+		worker:   worker,
+		ttl:      defaultTTL,
+		interval: defaultCleanInterval,
 	}
 	gl.jobIdentifier = defaultJobIdentifier(defaultPrecision)
 	for _, option := range options {
@@ -43,7 +45,7 @@ func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (*GormLock
 	}
 
 	go func() {
-		ticker := time.NewTicker(5 * time.Second)
+		ticker := time.NewTicker(gl.interval)
 		defer ticker.Stop()
 
 		for range ticker.C {
@@ -51,33 +53,34 @@ func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (*GormLock
 				return
 			}
 
-			gl.cleanExpire()
+			gl.cleanExpiredRecords()
 		}
 	}()
 
 	return gl, nil
 }
 
-var _ gocron.Locker = (*GormLocker)(nil)
+var _ gocron.Locker = (*gormLocker)(nil)
 
-type GormLocker struct {
+type gormLocker struct {
 	db            *gorm.DB
 	worker        string
 	ttl           time.Duration
+	interval      time.Duration
 	jobIdentifier func(ctx context.Context, key string) string
 
 	closed atomic.Bool
 }
 
-func (g *GormLocker) cleanExpire() {
+func (g *gormLocker) cleanExpiredRecords() {
 	g.db.Where("updated_at < ? and status = ?", time.Now().Add(-g.ttl), StatusFinished).Delete(&CronJobLock{})
 }
 
-func (g *GormLocker) Close() {
+func (g *gormLocker) Close() {
 	g.closed.Store(true)
 }
 
-func (g *GormLocker) Lock(ctx context.Context, key string) (gocron.Lock, error) {
+func (g *gormLocker) Lock(ctx context.Context, key string) (gocron.Lock, error) {
 	ji := g.jobIdentifier(ctx, key)
 
 	// I would like that people can "pass" their own implementation,

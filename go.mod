@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/go-co-op/gocron v1.37.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/testcontainers/testcontainers-go v0.27.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.27.0
 	gorm.io/driver/postgres v1.5.4

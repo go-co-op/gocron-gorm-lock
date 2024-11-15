@@ -1,6 +1,10 @@
 package gormlock
 
-import "time"
+import (
+	"errors"
+	"gorm.io/gorm"
+	"time"
+)
 
 type JobLock[T any] interface {
 	GetID() T
@@ -15,8 +19,8 @@ type CronJobLock struct {
 	UpdatedAt     time.Time
 	JobName       string `gorm:"index:idx_name,unique"`
 	JobIdentifier string `gorm:"index:idx_name,unique"`
-	Worker        string `gorm:"not null;default:null"`
-	Status        string `gorm:"not nullldefault:null"`
+	Worker        string `gorm:"not null"`
+	Status        string `gorm:"not null"`
 }
 
 func (cjb *CronJobLock) SetJobIdentifier(ji string) {
@@ -25,4 +29,14 @@ func (cjb *CronJobLock) SetJobIdentifier(ji string) {
 
 func (cjb *CronJobLock) GetID() int {
 	return cjb.ID
+}
+
+func (cjb *CronJobLock) BeforeCreate(_ *gorm.DB) error {
+	if cjb.Worker == "" {
+		return errors.New("worker is required")
+	}
+	if cjb.Status == "" {
+		return errors.New("status is required")
+	}
+	return nil
 }

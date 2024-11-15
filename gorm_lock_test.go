@@ -16,6 +16,7 @@ import (
 )
 
 func TestNewGormLocker_Validation(t *testing.T) {
+	t.Parallel()
 	tests := map[string]struct {
 		db     *gorm.DB
 		worker string
@@ -26,7 +27,9 @@ func TestNewGormLocker_Validation(t *testing.T) {
 	}
 
 	for name, tc := range tests {
+		name, tc := name, tc
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			_, err := NewGormLocker(tc.db, tc.worker)
 			if assert.Error(t, err) {
 				assert.ErrorContains(t, err, tc.err)
@@ -37,7 +40,7 @@ func TestNewGormLocker_Validation(t *testing.T) {
 
 func TestEnableDistributedLocking(t *testing.T) {
 	ctx := context.Background()
-	postgresContainer, err := testcontainerspostgres.RunContainer(ctx,
+	postgresContainer, err := testcontainerspostgres.Run(ctx, "docker.io/postgres:16-alpine",
 		testcontainers.WithWaitStrategy(wait.ForLog("database system is ready to accept connections").
 			WithOccurrence(2).WithStartupTimeout(5*time.Second)))
 	require.NoError(t, err)
@@ -97,7 +100,7 @@ func TestEnableDistributedLocking(t *testing.T) {
 
 func TestEnableDistributedLocking_DifferentJob(t *testing.T) {
 	ctx := context.Background()
-	postgresContainer, err := testcontainerspostgres.RunContainer(ctx,
+	postgresContainer, err := testcontainerspostgres.Run(ctx, "docker.io/postgres:16-alpine",
 		testcontainers.WithWaitStrategy(wait.ForLog("database system is ready to accept connections").
 			WithOccurrence(2).WithStartupTimeout(5*time.Second)))
 	require.NoError(t, err)
@@ -182,7 +185,7 @@ func TestEnableDistributedLocking_DifferentJob(t *testing.T) {
 
 func TestJobReturningExceptionWhenUnique(t *testing.T) {
 	ctx := context.Background()
-	postgresContainer, err := testcontainerspostgres.RunContainer(ctx,
+	postgresContainer, err := testcontainerspostgres.Run(ctx, "docker.io/postgres:16-alpine",
 		testcontainers.WithWaitStrategy(wait.ForLog("database system is ready to accept connections").
 			WithOccurrence(2).WithStartupTimeout(5*time.Second)))
 	require.NoError(t, err)
@@ -220,7 +223,7 @@ func TestJobReturningExceptionWhenUnique(t *testing.T) {
 
 func TestHandleTTL(t *testing.T) {
 	ctx := context.Background()
-	postgresContainer, err := testcontainerspostgres.RunContainer(ctx,
+	postgresContainer, err := testcontainerspostgres.Run(ctx, "docker.io/postgres:16-alpine",
 		testcontainers.WithWaitStrategy(wait.ForLog("database system is ready to accept connections").
 			WithOccurrence(2).WithStartupTimeout(5*time.Second)))
 	require.NoError(t, err)

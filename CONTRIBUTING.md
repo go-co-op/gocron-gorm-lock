@@ -8,7 +8,7 @@ If you find a bug then please let the project know by opening an issue after doi
 
 - Do a quick search of the existing issues to make sure the bug isn't already reported
 - Try and make a minimal list of steps that can reliably reproduce the bug you are experiencing
-- Collect as much information as you can to help identify what the issue is (project version, configuration files, etc)
+- Collect as much information as you can to help identify what the issue is (project version, configuration files, etc.)
 
 ## Suggesting Enhancements
 

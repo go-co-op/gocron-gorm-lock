@@ -1,3 +1,4 @@
+[![golangci-lint](https://github.com/go-co-op/gocron-gorm-lock/actions/workflows/go_test.yml/badge.svg)](https://github.com/go-co-op/gocron-gorm-lock/actions/workflows/go_test.yml)
 # gocron-gorm-lock
 A gocron locker implementation using gorm
 

@@ -5,7 +5,7 @@
 The current plan is to maintain version 1 as long as possible incorporating any necessary security patches.
 
 | Version | Supported          |
-| ------- | ------------------ |
+|---------|--------------------|
 | 1.x.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability

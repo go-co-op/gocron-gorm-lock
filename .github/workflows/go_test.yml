@@ -6,7 +6,7 @@ on:
     branches:
       - main
 
-name: golangci-lint
+name: lint and test
 jobs:
   golangci:
     strategy:

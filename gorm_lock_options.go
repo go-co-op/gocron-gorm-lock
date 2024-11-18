@@ -7,6 +7,7 @@ import (
 
 type LockOption func(*GormLocker)
 
+//nolint:unused
 func WithJobIdentifier(f func(ctx context.Context, key string) string) LockOption {
 	return func(l *GormLocker) {
 		l.jobIdentifier = f
@@ -28,6 +29,8 @@ func WithTTL(ttl time.Duration) LockOption {
 }
 
 // WithCleanInterval the time interval to run clean operation.
+//
+//nolint:unused
 func WithCleanInterval(interval time.Duration) LockOption {
 	return func(l *GormLocker) {
 		l.interval = interval

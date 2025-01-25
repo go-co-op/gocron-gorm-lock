@@ -1,7 +1,6 @@
 package gormlock
 
 import (
-	"errors"
 	"gorm.io/gorm"
 	"time"
 )
@@ -33,10 +32,10 @@ func (cjb *CronJobLock) GetID() int {
 
 func (cjb *CronJobLock) BeforeCreate(_ *gorm.DB) error {
 	if cjb.Worker == "" {
-		return errors.New("worker is required")
+		return ErrWorkerIsRequired
 	}
 	if cjb.Status == "" {
-		return errors.New("status is required")
+		return ErrStatusIsRequired
 	}
 	return nil
 }

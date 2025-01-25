@@ -2,35 +2,19 @@ package gormlock
 
 import (
 	"context"
-	"fmt"
 	"sync/atomic"
 	"time"
 
-	"github.com/go-co-op/gocron"
+	"github.com/go-co-op/gocron/v2"
 	"gorm.io/gorm"
-)
-
-var (
-	defaultPrecision     = time.Second
-	defaultJobIdentifier = func(precision time.Duration) func(ctx context.Context, key string) string {
-		return func(ctx context.Context, key string) string {
-			return time.Now().Truncate(precision).Format("2006-01-02 15:04:05.000")
-		}
-	}
-
-	StatusRunning  = "RUNNING"
-	StatusFinished = "FINISHED"
-
-	defaultTTL           = 24 * time.Hour
-	defaultCleanInterval = 5 * time.Second
 )
 
 func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (*GormLocker, error) {
 	if db == nil {
-		return nil, fmt.Errorf("gorm db definition can't be null")
+		return nil, ErrGormCantBeNull
 	}
 	if worker == "" {
-		return nil, fmt.Errorf("worker name can't be null")
+		return nil, ErrWorkerIsRequired
 	}
 
 	gl := &GormLocker{
@@ -83,14 +67,13 @@ func (g *GormLocker) Close() {
 func (g *GormLocker) Lock(ctx context.Context, key string) (gocron.Lock, error) {
 	ji := g.jobIdentifier(ctx, key)
 
-	// I would like that people can "pass" their own implementation,
 	cjb := &CronJobLock{
 		JobName:       key,
 		JobIdentifier: ji,
 		Worker:        g.worker,
 		Status:        StatusRunning,
 	}
-	tx := g.db.Create(cjb)
+	tx := g.db.WithContext(ctx).Create(cjb)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
@@ -101,6 +84,7 @@ var _ gocron.Lock = (*gormLock)(nil)
 
 type gormLock struct {
 	db *gorm.DB
+	//id the id that lock a particular job
 	id int
 }
 

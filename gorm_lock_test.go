@@ -186,7 +186,6 @@ func TestEnableDistributedLocking_DifferentJob(t *testing.T) {
 }
 
 func TestJobReturningExceptionWhenUnique(t *testing.T) {
-	t.Parallel()
 	precision := 60 * time.Minute
 	tests := map[string]struct {
 		ji         string
@@ -206,7 +205,6 @@ func TestJobReturningExceptionWhenUnique(t *testing.T) {
 	for name, tc := range tests {
 		name, tc := name, tc
 		t.Run(name, func(t *testing.T) {
-			t.Parallel()
 			ctx := context.Background()
 			postgresContainer, err := testcontainerspostgres.Run(ctx, "docker.io/postgres:16-alpine",
 				testcontainers.WithWaitStrategy(wait.ForLog("database system is ready to accept connections").

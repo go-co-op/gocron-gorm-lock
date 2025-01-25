@@ -8,7 +8,7 @@ import (
 var (
 	defaultPrecision     = time.Second
 	defaultJobIdentifier = func(precision time.Duration) func(ctx context.Context, key string) string {
-		return func(_ context.Context, key string) string {
+		return func(_ context.Context, _ string) string {
 			return time.Now().Truncate(precision).Format("2006-01-02 15:04:05.000")
 		}
 	}

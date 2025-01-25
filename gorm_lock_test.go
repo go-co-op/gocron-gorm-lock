@@ -198,7 +198,7 @@ func TestJobReturningExceptionWhenUnique(t *testing.T) {
 		},
 		"override job identifier with hardcoded name": {
 			ji: "hardcoded",
-			lockOption: []LockOption{WithJobIdentifier(func(ctx context.Context, key string) string {
+			lockOption: []LockOption{WithJobIdentifier(func(_ context.Context, _ string) string {
 				return "hardcoded"
 			})},
 		},

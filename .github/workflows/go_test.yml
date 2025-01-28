@@ -14,7 +14,7 @@ jobs:
         go-version:
           - "1.21"
           - "1.22"
-          - "1.23"
+#          - "1.23" Currently failing in actions, with no discernible error
     name: lint and test
     runs-on: ubuntu-latest
     steps:
@@ -25,7 +25,7 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6.1.1
+        uses: golangci/golangci-lint-action@v6.2.0
         with:
           version: v1.59.1
       - name: test

@@ -2,13 +2,14 @@ package gormlock
 
 import (
 	"context"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/mysql"
 	gormMysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"testing"
 )
 
 func TestAutoMigration_MySQL(t *testing.T) {
@@ -24,7 +25,6 @@ func TestAutoMigration_MySQL(t *testing.T) {
 	}
 
 	for name, tc := range tests {
-		name, tc := name, tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()

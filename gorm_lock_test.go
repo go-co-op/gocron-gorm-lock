@@ -27,7 +27,6 @@ func TestNewGormLocker_Validation(t *testing.T) {
 	}
 
 	for name, tc := range tests {
-		name, tc := name, tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			_, err := NewGormLocker(tc.db, tc.worker)
@@ -203,7 +202,6 @@ func TestJobReturningExceptionWhenUnique(t *testing.T) {
 		},
 	}
 	for name, tc := range tests {
-		name, tc := name, tc
 		t.Run(name, func(t *testing.T) {
 			ctx := context.Background()
 			postgresContainer, err := testcontainerspostgres.Run(ctx, "docker.io/postgres:16-alpine",

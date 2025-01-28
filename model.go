@@ -1,8 +1,9 @@
 package gormlock
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type JobLock[T any] interface {

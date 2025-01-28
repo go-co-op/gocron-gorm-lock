@@ -84,7 +84,7 @@ var _ gocron.Lock = (*gormLock)(nil)
 
 type gormLock struct {
 	db *gorm.DB
-	//id the id that lock a particular job
+	// id the id that lock a particular job
 	id int
 }
 

@@ -9,7 +9,7 @@ A gocron locker implementation using gorm
 ## ⬇️ Install
 
 ```
-go get github.com/go-co-op/gocron-gorm-lock@v2
+go get github.com/go-co-op/gocron-gorm-lock/v2
 ```
 
 ## 📋 Usage

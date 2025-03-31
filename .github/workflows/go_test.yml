@@ -12,9 +12,8 @@ jobs:
     strategy:
       matrix:
         go-version:
-          - "1.21"
-          - "1.22"
-#          - "1.23" Currently failing in actions, with no discernible error
+          - oldstable
+          - stable
     name: lint and test
     runs-on: ubuntu-latest
     steps:

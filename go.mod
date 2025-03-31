@@ -1,7 +1,6 @@
 module github.com/go-co-op/gocron-gorm-lock/v2
 
-go 1.22
-toolchain go1.24.1
+go 1.23.0
 
 require (
 	github.com/go-co-op/gocron/v2 v2.16.1

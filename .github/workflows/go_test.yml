@@ -12,9 +12,8 @@ jobs:
     strategy:
       matrix:
         go-version:
-          - "1.21"
-          - "1.22"
-#          - "1.23" Currently failing in actions, with no discernible error
+          - oldstable
+          - stable
     name: lint and test
     runs-on: ubuntu-latest
     steps:
@@ -25,8 +24,8 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6.5.2
+        uses: golangci/golangci-lint-action@v7.0.0
         with:
-          version: v1.59.1
+          version: v2.0.2
       - name: test
         run: make test

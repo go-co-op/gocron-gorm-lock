@@ -1,2 +1,2 @@
 [files]
-exclude = ["go.mod", "go.sum"]  # Ignores both files
+extend-exclude = ["go.mod", "go.sum"]  # Ignores both files

@@ -1,0 +1,2 @@
+[files]
+ignore = ["go.mod", "go.sum"]  # Ignores both files

@@ -9,6 +9,18 @@ import (
 	"gorm.io/gorm"
 )
 
+var _ gocron.Locker = (*GormLocker)(nil)
+
+type GormLocker struct {
+	db            *gorm.DB
+	worker        string
+	ttl           time.Duration
+	interval      time.Duration
+	jobIdentifier func(ctx context.Context, key string) string
+
+	closed atomic.Bool
+}
+
 func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (*GormLocker, error) {
 	if db == nil {
 		return nil, ErrGormCantBeNull
@@ -44,22 +56,6 @@ func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (*GormLock
 	return gl, nil
 }
 
-var _ gocron.Locker = (*GormLocker)(nil)
-
-type GormLocker struct {
-	db            *gorm.DB
-	worker        string
-	ttl           time.Duration
-	interval      time.Duration
-	jobIdentifier func(ctx context.Context, key string) string
-
-	closed atomic.Bool
-}
-
-func (g *GormLocker) cleanExpiredRecords() {
-	g.db.Where("updated_at < ? and status = ?", time.Now().Add(-g.ttl), StatusFinished).Delete(&CronJobLock{})
-}
-
 func (g *GormLocker) Close() {
 	g.closed.Store(true)
 }
@@ -78,6 +74,10 @@ func (g *GormLocker) Lock(ctx context.Context, key string) (gocron.Lock, error) 
 		return nil, tx.Error
 	}
 	return &gormLock{db: g.db, id: cjb.GetID()}, nil
+}
+
+func (g *GormLocker) cleanExpiredRecords() {
+	g.db.Where("updated_at < ? and status = ?", time.Now().Add(-g.ttl), StatusFinished).Delete(&CronJobLock{})
 }
 
 var _ gocron.Lock = (*gormLock)(nil)

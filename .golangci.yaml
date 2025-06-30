@@ -13,6 +13,7 @@ linters:
   enable:
     - bodyclose
     - copyloopvar
+    - embeddedstructfieldcheck
     - gosec
     - funcorder
     - misspell
@@ -41,8 +42,22 @@ issues:
   fix: true
 formatters:
   enable:
+    - gofmt
     - gofumpt
-    - goimports
+    - gci
+  settings:
+    gofmt:
+      simplify: true
+      rewrite-rules:
+        - pattern: 'interface{}'
+          replacement: 'any'
+    gofumpt:
+      extra-rules: true
+    gci:
+      sections:
+        - standard
+        - default
+        - localmodule
   exclusions:
     generated: lax
     paths:

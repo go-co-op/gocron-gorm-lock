@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
-	gormlock "github.com/go-co-op/gocron-gorm-lock/v2"
+	"time"
+
 	"github.com/go-co-op/gocron/v2"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"time"
+
+	gormlock "github.com/go-co-op/gocron-gorm-lock/v2"
 )
 
 func jobFunc() {

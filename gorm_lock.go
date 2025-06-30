@@ -21,7 +21,6 @@ type GormLocker struct {
 	closed atomic.Bool
 }
 
-// NewGormLocker Creates a new GormLocker
 func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (*GormLocker, error) {
 	if db == nil {
 		return nil, ErrGormCantBeNull
@@ -57,6 +56,10 @@ func NewGormLocker(db *gorm.DB, worker string, options ...LockOption) (*GormLock
 	return gl, nil
 }
 
+func (g *GormLocker) Close() {
+	g.closed.Store(true)
+}
+
 func (g *GormLocker) Lock(ctx context.Context, key string) (gocron.Lock, error) {
 	ji := g.jobIdentifier(ctx, key)
 
@@ -71,10 +74,6 @@ func (g *GormLocker) Lock(ctx context.Context, key string) (gocron.Lock, error) 
 		return nil, tx.Error
 	}
 	return &gormLock{db: g.db, id: cjb.GetID()}, nil
-}
-
-func (g *GormLocker) Close() {
-	g.closed.Store(true)
 }
 
 func (g *GormLocker) cleanExpiredRecords() {

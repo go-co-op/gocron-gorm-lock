@@ -3,14 +3,14 @@ module github.com/go-co-op/gocron-gorm-lock/v2
 go 1.23.0
 
 require (
-	github.com/go-co-op/gocron/v2 v2.16.3
-	github.com/stretchr/testify v1.11.0
+	github.com/go-co-op/gocron/v2 v2.16.5
+	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.38.0
 	github.com/testcontainers/testcontainers-go/modules/mysql v0.38.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.38.0
 	gorm.io/driver/mysql v1.6.0
 	gorm.io/driver/postgres v1.6.0
-	gorm.io/gorm v1.30.1
+	gorm.io/gorm v1.30.3
 )
 
 require (

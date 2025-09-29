@@ -3,7 +3,7 @@ module github.com/go-co-op/gocron-gorm-lock/v2
 go 1.24.0
 
 require (
-	github.com/go-co-op/gocron/v2 v2.16.5
+	github.com/go-co-op/gocron/v2 v2.16.6
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.39.0
 	github.com/testcontainers/testcontainers-go/modules/mysql v0.39.0

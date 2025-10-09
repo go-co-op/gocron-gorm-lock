@@ -82,6 +82,8 @@ At `t1`, `i1` is faster in picking up the job, and then this happened:
 * `i1` creates a record in the database, (`jobName: test, jobIdentifier: t1`).
 * Then, `i2` will try to lock and insert a record with the same values (`jobName: test, jobIdentifier: t1`). 
 * But there is a combined unique constraint in the columns `jobName` and `jobIdentifier` making `i2` not able to run the job.
+
+![sequence diagram example for jobIdentifier](./assets/jobIdentifier-example.png "Job Identifier Example")
 </details>
 
 #### JobIdentifier Timestamp Precision

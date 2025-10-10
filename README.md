@@ -30,11 +30,11 @@ import (
 
 func main() {
     var db * gorm.DB // gorm db connection
-    var worker string // name of this instance to be used to know which instance run the job 
+    var worker string // name of this instance to be used to know which instance run the job
     // db.AutoMigrate(&gormlock.CronJobLock{}) // We need the table to store the job execution
     locker, err := gormlock.NewGormLocker(db, worker)
     // handle the error
-    
+
     s, err := gocron.NewScheduler(gocron.WithDistributedLocker(locker))
     // handle the error
 
@@ -42,7 +42,7 @@ func main() {
         // task to do
         fmt.Println("call 1s")
     }
-    
+
     _, err = s.NewJob(gocron.DurationJob(1*time.Second), gocron.NewTask(f), gocron.WithName("unique_name"))
     if err != nil {
         // handle the error
@@ -63,7 +63,35 @@ To check a real use case example, check [examples](./examples).
 
 ### JobIdentifier
 
-Gorm Lock tries to lock the access to a job by uniquely identify the job. The default implementation to uniquely identify the job is using the following combination [`job name and timestamp`](./gorm_lock_options.go).
+`JobIdentifier` is how the locker identify when the job was run.
+Gorm Lock tries to lock the run of a job by uniquely identify a particular execution of a job with the combination of
+
+- job name
+- job identifier
+
+There is a unique key constraint in those two columns.
+The default implementation to uniquely identify a particular execution of job is using the following combination:
+
+- `jobName`: retrieved from the cron job.
+- `jobIdentifier`: a timestamp of when the job run.
+
+For more details check [gorm-lock-options.go](./gorm_lock_options.go).
+
+<details>
+<summary>Example</summary>
+
+Imagine that you have two instances running (`i1` and `i2`).
+And you configure a cron job (named `myJob`) to run at a certain period (e.g. every minute).
+
+At `t1`, `i1` is faster in picking up the job, and then this happened:
+
+- `i1` creates a record in the database, (`jobName: test, jobIdentifier: t1`).
+- Then, `i2` will try to lock and insert a record with the same values (`jobName: test, jobIdentifier: t1`).
+- But there is a combined unique constraint in the columns `jobName` and `jobIdentifier` making `i2` not able to run the job.
+
+![sequence diagram example for jobIdentifier](./assets/jobIdentifier-example.png "Job Identifier Example")
+
+</details>
 
 #### JobIdentifier Timestamp Precision
 

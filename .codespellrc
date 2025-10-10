@@ -2,7 +2,7 @@
 [codespell]
 
 # Comma-separated list of files to skip.
-skip = ./go.mod,./go.sum,./.git
+skip = *go.mod,*go.sum,./.git
 
 # Check file names as well.
 check-filenames = true

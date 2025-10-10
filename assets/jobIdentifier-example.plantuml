@@ -1,0 +1,22 @@
+@startuml
+autonumber
+participant Instance1 as i1
+participant Instance2 as i2
+database    Database as db
+
+group t1
+    i1 -> db: myJob,t1
+    i2 --x db: myJob,t1
+    note across: job run by instance 1
+end
+
+...
+autonumber 1
+
+group t2
+    i2 -> db: myJob, t2
+    i1 --x db: myJob, t2
+    note across: job run by instance 2
+end
+
+@enduml

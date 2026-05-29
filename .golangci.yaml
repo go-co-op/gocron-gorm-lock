@@ -17,8 +17,14 @@ linters:
     - gosec
     - funcorder
     - misspell
+    - modernize
     - revive
     - whitespace
+  settings:
+    embeddedstructfieldcheck:
+      forbid-mutex: true
+    funcorder:
+      function: true
   exclusions:
     generated: lax
     presets:

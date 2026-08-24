@@ -6,9 +6,9 @@ replace github.com/go-co-op/gocron-gorm-lock/v2 => ../
 
 require (
 	github.com/go-co-op/gocron-gorm-lock/v2 v2.1.0
-	github.com/go-co-op/gocron/v2 v2.21.2
+	github.com/go-co-op/gocron/v2 v2.22.0
 	gorm.io/driver/sqlite v1.6.0
-	gorm.io/gorm v1.31.1
+	gorm.io/gorm v1.31.2
 )
 
 require (
@@ -18,5 +18,5 @@ require (
 	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
-	golang.org/x/text v0.34.0 // indirect
+	golang.org/x/text v0.40.0 // indirect
 )

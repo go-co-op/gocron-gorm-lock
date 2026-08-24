@@ -1,7 +1,6 @@
 # Gocron-Gorm-Lock
 
 [![golangci-lint](https://github.com/go-co-op/gocron-gorm-lock/actions/workflows/go_test.yml/badge.svg)](https://github.com/go-co-op/gocron-gorm-lock/actions/workflows/go_test.yml)
-![Go Report Card](https://goreportcard.com/badge/github.com/go-co-op/gocron-gorm-lock)
 [![Go Doc](https://godoc.org/github.com/go-co-op/gocron-gorm-lock?status.svg)](https://pkg.go.dev/github.com/go-co-op/gocron-gorm-lock)
 
 A gocron locker implementation using gorm

@@ -12,6 +12,9 @@ format-code: tidy ## Format go code and run the fixer, alias: fmt
 	golangci-lint run --fix ./...
 .PHONY: fmt format-code
 
+lint:
+	@golangci-lint run ./...
+
 test:
 	@go test -race -v $(GO_FLAGS) -count=1 $(GO_PKGS)
 .PHONY: t test

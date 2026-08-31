@@ -58,7 +58,8 @@ formatters:
         - pattern: 'interface{}'
           replacement: 'any'
     gofumpt:
-      extra-rules: true
+      extra:
+        group-params: true
     gci:
       sections:
         - standard
